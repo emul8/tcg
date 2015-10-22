@@ -14,5 +14,9 @@ void set_temp_buf_offset(unsigned int offset);
 void set_tlb_table_n_0_rwa(int i, unsigned int read, unsigned int write, unsigned int addend);
 void set_tlb_table_n_0(int i, unsigned int offset);
 void set_TARGET_PAGE_BITS(int val);
+void set_sizeof_CPUTLBEntry(unsigned int sz);
+void set_tlb_entry_addr_rwu(unsigned int read, unsigned int write, unsigned int addend);
+
 void attach_malloc(void *malloc_callback);
+void attach_realloc(void * reall);
 
