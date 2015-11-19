@@ -11,10 +11,10 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     set (HOST_BITS 64)
 endif()
 
-set (HOST "i386" CACHE STRING "Host architecture")
-set_property (CACHE HOST PROPERTY STRINGS i386 arm)
+set (HOST_ARCHITECTURE "i386" CACHE STRING "Host architecture")
+set_property (CACHE HOST_ARCHITECTURE PROPERTY STRINGS i386 arm)
 
-string (TOUPPER ${HOST} HOST_UPPER)
+string (TOUPPER ${HOST_ARCHITECTURE} HOST_UPPER)
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fomit-frame-pointer")
 if(${HOST_BITS} EQUAL 64)
@@ -34,7 +34,7 @@ add_definitions (
     -DTCG_TARGET_${HOST_UPPER}
     -DHOST_BITS_${HOST_BITS})
 
-include_directories (${HOST})
+include_directories (${HOST_ARCHITECTURE})
 
 add_library (tcg STATIC
     additional.c
