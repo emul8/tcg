@@ -58,6 +58,7 @@ typedef uint64_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
 #endif
 
 #define CPU_TEMP_BUF_NLONGS 128
+#define TCG_TARGET_REG_BITS HOST_LONG_BITS
 
 #define CPU_TLB_BITS 8
 #define CPU_TLB_SIZE (1 << CPU_TLB_BITS)
@@ -69,16 +70,6 @@ typedef uint64_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
 #include <assert.h>
 
 #include "additional.h"
-
-/* Target word size (must be identical to pointer size). */
-#if UINTPTR_MAX == UINT32_MAX
-# define TCG_TARGET_REG_BITS 32
-#elif UINTPTR_MAX == UINT64_MAX
-# define TCG_TARGET_REG_BITS 64
-#else
-# error Unknown pointer size for tcg target
-#endif
-
 #include "tcg-target.h"
 #include "tcg-runtime.h"
 

@@ -40,13 +40,13 @@
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 #endif
 
-#ifdef __i386__
+#if defined(TCG_TARGET_I386) && HOST_LONG_BITS == 32
 #define REGPARM __attribute((regparm(3)))
 #else
 #define REGPARM
 #endif
 
-#if defined(__x86_64__)
+#if defined(TCG_TARGET_I386) && HOST_LONG_BITS == 64
 #define __HAVE_FAST_MULU64__
 static inline void mulu64(uint64_t *plow, uint64_t *phigh,
                           uint64_t a, uint64_t b)
