@@ -39,16 +39,15 @@ extern int TARGET_PAGE_BITS;
 #error "HOST_BITS not defined"
 #endif
 
-#define TARGET_LONG_SIZE (TARGET_LONG_BITS / 8)
 
 #define TARGET_PAGE_SIZE (1 << TARGET_PAGE_BITS)
 #define TARGET_PAGE_MASK ~(TARGET_PAGE_SIZE - 1)
 
 #define TARGET_LONG_ALIGNMENT 4
 
-#if TARGET_LONG_SIZE == 4
+#if TARGET_LONG_BITS == 32
 typedef uint32_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
-#elif TARGET_LONG_SIZE == 8
+#elif TARGET_LONG_BITS == 64
 typedef uint64_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
 #endif
 
