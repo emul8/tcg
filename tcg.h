@@ -28,15 +28,16 @@
 extern int TARGET_PAGE_BITS;
 #endif
 
-#define TARGET_LONG_BITS 32 // TODO: should also support 64-bit targets
-
-
 #ifdef HOST_BITS_32
 #define HOST_LONG_BITS 32
 #elif defined(HOST_BITS_64)
 #define HOST_LONG_BITS 64
 #else
 #error "HOST_BITS not defined"
+#ifndef TARGET_LONG_BITS
+#   error "TARGET_LONG_BITS not defined"
+#elif TARGET_LONG_BITS != 32 && TARGET_LONG_BITS != 64
+#   error "Only 32 or 64 values are supported for TARGET_LONG_BITS"
 #endif
 
 

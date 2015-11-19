@@ -14,6 +14,7 @@ endif()
 set (HOST_ARCHITECTURE "i386" CACHE STRING "Host architecture")
 set_property (CACHE HOST_ARCHITECTURE PROPERTY STRINGS i386 arm)
 
+set (TARGET_LONG_BITS "32" CACHE STRING "Target word size")
 string (TOUPPER ${HOST_ARCHITECTURE} HOST_UPPER)
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fomit-frame-pointer")
@@ -30,6 +31,7 @@ add_definitions (
     -DCONFIG_NEED_MMU
     -DCONFIG_SOFTMMU
     -DNEED_CPU_H
+    -DTARGET_LONG_BITS=${TARGET_LONG_BITS}
     -DNDEBUG
     -DTCG_TARGET_${HOST_UPPER}
     -DHOST_BITS_${HOST_BITS})
