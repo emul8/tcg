@@ -6,7 +6,7 @@ option (BIG_ENDIAN "Big endian" OFF)
 set (HOST_LONG_BITS 0 CACHE INT "Host word size (0 - autodetection)")
 set (HOST_ARCHITECTURE "i386" CACHE STRING "Host architecture")
 set_property (CACHE HOST_ARCHITECTURE PROPERTY STRINGS i386 arm)
-set (TARGET_LONG_BITS "32" CACHE STRING "Target word size")
+set (TARGET_LONG_BITS 32 CACHE INT "Target word size")
 
 if(HOST_LONG_BITS EQUAL 0)
     # Determine bitness
