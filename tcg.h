@@ -28,27 +28,26 @@
 extern int TARGET_PAGE_BITS;
 #endif
 
-#define TARGET_LONG_BITS 32 // TODO: should also support 64-bit targets
-
-
-#ifdef HOST_BITS_32
-#define HOST_LONG_BITS 32
-#elif defined(HOST_BITS_64)
-#define HOST_LONG_BITS 64
-#else
-#error "HOST_BITS not defined"
+#ifndef TARGET_LONG_BITS
+#   error "TARGET_LONG_BITS not defined"
+#elif TARGET_LONG_BITS != 32 && TARGET_LONG_BITS != 64
+#   error "Only 32 or 64 values are supported for TARGET_LONG_BITS"
 #endif
 
-#define TARGET_LONG_SIZE (TARGET_LONG_BITS / 8)
+#ifndef HOST_LONG_BITS
+#   error "HOST_LONG_BITS not defined"
+#elif HOST_LONG_BITS != 32 && HOST_LONG_BITS != 64
+#   error "Only 32 or 64 values are supported for HOST_LONG_BITS"
+#endif
 
 #define TARGET_PAGE_SIZE (1 << TARGET_PAGE_BITS)
 #define TARGET_PAGE_MASK ~(TARGET_PAGE_SIZE - 1)
 
 #define TARGET_LONG_ALIGNMENT 4
 
-#if TARGET_LONG_SIZE == 4
+#if TARGET_LONG_BITS == 32
 typedef uint32_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
-#elif TARGET_LONG_SIZE == 8
+#elif TARGET_LONG_BITS == 64
 typedef uint64_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
 #endif
 
@@ -59,6 +58,7 @@ typedef uint64_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
 #endif
 
 #define CPU_TEMP_BUF_NLONGS 128
+#define TCG_TARGET_REG_BITS HOST_LONG_BITS
 
 #define CPU_TLB_BITS 8
 #define CPU_TLB_SIZE (1 << CPU_TLB_BITS)
@@ -70,16 +70,6 @@ typedef uint64_t target_ulong __attribute__((aligned(TARGET_LONG_ALIGNMENT)));
 #include <assert.h>
 
 #include "additional.h"
-
-/* Target word size (must be identical to pointer size). */
-#if UINTPTR_MAX == UINT32_MAX
-# define TCG_TARGET_REG_BITS 32
-#elif UINTPTR_MAX == UINT64_MAX
-# define TCG_TARGET_REG_BITS 64
-#else
-# error Unknown pointer size for tcg target
-#endif
-
 #include "tcg-target.h"
 #include "tcg-runtime.h"
 
