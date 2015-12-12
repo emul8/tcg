@@ -951,8 +951,6 @@ static void tcg_out_jmp(TCGContext *s, tcg_target_long dest)
     tcg_out_branch(s, 0, dest);
 }
 
-#include "../softmmu_defs.h"
-
 extern void *qemu_ld_helpers[];
 extern void *qemu_st_helpers[];
 
