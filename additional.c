@@ -27,14 +27,6 @@
 
 tcg_context_t ctx;
 
-void *qemu_ld_helpers[4] = {
- NULL, NULL, NULL, NULL
-};
-
-void *qemu_st_helpers[4] = {
- NULL, NULL, NULL, NULL
-};
-
 void attach_gen_opc_buf(void *buf) {
 	ctx.gen_opc_buf = buf;
 }
@@ -52,17 +44,17 @@ void attach_gen_opparam_buf(void *buf) {
 }
 
 void attach_ld_helpers(void *__ldb, void *__ldw, void *__ldl, void *__ldq) {
-	qemu_ld_helpers[0] = __ldb;
-	qemu_ld_helpers[1] = __ldw;
-	qemu_ld_helpers[2] = __ldl;
-	qemu_ld_helpers[3] = __ldq;
+	ctx.ld_helpers[0] = __ldb;
+	ctx.ld_helpers[1] = __ldw;
+	ctx.ld_helpers[2] = __ldl;
+	ctx.ld_helpers[3] = __ldq;
 }
 
 void attach_st_helpers(void *__stb, void *__stw, void *__stl, void *__stq) {
-	qemu_st_helpers[0] = __stb;
-	qemu_st_helpers[1] = __stw;
-	qemu_st_helpers[2] = __stl;
-	qemu_st_helpers[3] = __stq;
+	ctx.st_helpers[0] = __stb;
+	ctx.st_helpers[1] = __stw;
+	ctx.st_helpers[2] = __stl;
+	ctx.st_helpers[3] = __stq;
 }
 
 void *(*_TCG_malloc)(size_t);

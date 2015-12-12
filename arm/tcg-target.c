@@ -22,9 +22,6 @@
  * THE SOFTWARE.
  */
 
-extern void *qemu_ld_helpers[];
-extern void *qemu_st_helpers[];
-
 #if defined(__ARM_ARCH_7__) ||  \
     defined(__ARM_ARCH_7A__) || \
     defined(__ARM_ARCH_7EM__) || \
@@ -1036,7 +1033,7 @@ static inline void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args, int opc)
                     TCG_REG_R1, 0, addr_reg2, SHIFT_IMM_LSL(0));
     tcg_out_dat_imm(s, COND_AL, ARITH_MOV, TCG_REG_R2, 0, mem_index);
 # endif
-    tcg_out_call(s, (tcg_target_long) qemu_ld_helpers[s_bits]);
+    tcg_out_call(s, (tcg_target_long) ctx.ld_helpers[s_bits]);
 
     switch (opc) {
     case 0 | 4:
@@ -1238,7 +1235,7 @@ static inline void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, int opc)
         break;
     }
 
-    tcg_out_call(s, (tcg_target_long) qemu_st_helpers[s_bits]);
+    tcg_out_call(s, (tcg_target_long) ctx.st_helpers[s_bits]);
     if (opc == 3)
         tcg_out_dat_imm(s, COND_AL, ARITH_ADD, TCG_REG_R13, TCG_REG_R13, 0x10);
 

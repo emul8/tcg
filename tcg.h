@@ -388,9 +388,15 @@ typedef struct tcg_context_t {
    uint16_t *gen_opc_buf;
    TCGArg *gen_opparam_buf;
    uint8_t *code_gen_prologue __attribute__((aligned (32)));
+   target_ulong *gen_opc_pc;
+   uint8_t *gen_opc_instr_start;
+   void *ld_helpers[4];
+   void *st_helpers[4];
 } tcg_context_t;
 
 extern tcg_context_t ctx;
+
+tcg_context_t *tcg_get_context();
 
 static inline void *tcg_malloc(int size)
 {
@@ -407,8 +413,8 @@ static inline void *tcg_malloc(int size)
     }
 }
 
-void tcg_context_init(TCGContext *s);
-void tcg_prologue_init(TCGContext *s);
+void tcg_context_init();
+void tcg_prologue_init();
 void tcg_func_start(TCGContext *s);
 
 int tcg_gen_code(TCGContext *s, uint8_t *gen_code_buf);

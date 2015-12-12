@@ -38,12 +38,6 @@
 
 #include "host-utils.h"
 
-/* Note: the long term plan is to reduce the dependancies on the QEMU
-   CPU definitions. Currently they are used for qemu_ld/st
-   instructions */
-#define NO_CPU_IO_DEFS
-//#include "cpu.h"
-
 #include "tcg-op.h"
 
 #define R_386_PC32 2
@@ -214,8 +208,13 @@ void tcg_pool_reset(TCGContext *s)
     s->pool_current = NULL;
 }
 
-void tcg_context_init(TCGContext *s)
+tcg_context_t *tcg_get_context() {
+    return &ctx;
+}
+
+void tcg_context_init()
 {
+    TCGContext *s = ctx.tcg_ctx;
     int op, total_args, n;
     TCGOpDef *def;
     TCGArgConstraint *args_ct;
@@ -248,14 +247,14 @@ void tcg_context_init(TCGContext *s)
     tcg_target_init(s);
 }
 
-void tcg_prologue_init(TCGContext *s)
+void tcg_prologue_init()
 {
     /* init global prologue and epilogue */
-    s->code_buf = ctx.code_gen_prologue;
-    s->code_ptr = s->code_buf;
-    tcg_target_qemu_prologue(s);
-    flush_icache_range((unsigned long)s->code_buf, 
-                       (unsigned long)s->code_ptr);
+    ctx.tcg_ctx->code_buf = ctx.code_gen_prologue;
+    ctx.tcg_ctx->code_ptr = ctx.tcg_ctx->code_buf;
+    tcg_target_qemu_prologue(ctx.tcg_ctx);
+    flush_icache_range((unsigned long)ctx.tcg_ctx->code_buf,
+                       (unsigned long)ctx.tcg_ctx->code_ptr);
 }
 
 void tcg_set_frame(TCGContext *s, int reg,
