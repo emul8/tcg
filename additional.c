@@ -25,11 +25,7 @@
 #include <string.h>
 #include "tcg.h"
 
-uint16_t *gen_opc_buf;
-TCGArg *gen_opparam_buf;
-uint8_t *code_gen_prologue __attribute__((aligned (32)));
-
-TCGContext *tcg_ctx;
+tcg_context_t ctx;
 
 void *qemu_ld_helpers[4] = {
  NULL, NULL, NULL, NULL
@@ -40,19 +36,19 @@ void *qemu_st_helpers[4] = {
 };
 
 void attach_gen_opc_buf(void *buf) {
-	gen_opc_buf = buf;
+	ctx.gen_opc_buf = buf;
 }
 
 void attach_tcg_ctx(void *tcg_c) {
-	tcg_ctx = tcg_c;
+	ctx.tcg_ctx = tcg_c;
 }
 
 void attach_code_gen_prologue(void *prol) {
-	code_gen_prologue = prol;
+	ctx.code_gen_prologue = prol;
 }
 
 void attach_gen_opparam_buf(void *buf) {
-	gen_opparam_buf = buf;
+	ctx.gen_opparam_buf = buf;
 }
 
 void attach_ld_helpers(void *__ldb, void *__ldw, void *__ldl, void *__ldq) {

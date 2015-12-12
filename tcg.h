@@ -374,12 +374,8 @@ struct TCGContext {
     int helpers_sorted;
 };
 
-extern TCGContext *tcg_ctx;
-
 extern uint16_t *gen_opc_ptr;
 extern TCGArg *gen_opparam_ptr;
-extern uint16_t *gen_opc_buf;
-extern TCGArg *gen_opparam_buf;
 
 /* pool based memory allocation */
 
@@ -387,15 +383,24 @@ void *tcg_malloc_internal(TCGContext *s, int size);
 void tcg_pool_reset(TCGContext *s);
 void tcg_pool_delete(TCGContext *s);
 
+typedef struct tcg_context_t {
+   TCGContext *tcg_ctx;
+   uint16_t *gen_opc_buf;
+   TCGArg *gen_opparam_buf;
+   uint8_t *code_gen_prologue __attribute__((aligned (32)));
+} tcg_context_t;
+
+extern tcg_context_t ctx;
+
 static inline void *tcg_malloc(int size)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx.tcg_ctx;
     uint8_t *ptr, *ptr_end;
     size = (size + sizeof(long) - 1) & ~(sizeof(long) - 1);
     ptr = s->pool_cur;
     ptr_end = ptr + size;
     if (unlikely(ptr_end > s->pool_end)) {
-        return tcg_malloc_internal(tcg_ctx, size);
+        return tcg_malloc_internal(ctx.tcg_ctx, size);
     } else {
         s->pool_cur = ptr_end;
         return ptr;
@@ -548,11 +553,8 @@ TCGv_i64 tcg_const_i64(int64_t val);
 TCGv_i32 tcg_const_local_i32(int32_t val);
 TCGv_i64 tcg_const_local_i64(int64_t val);
 
-extern uint8_t *code_gen_prologue;
-
 /* TCG targets may use a different definition of tcg_qemu_tb_exec. */
 #if !defined(tcg_qemu_tb_exec)
 # define tcg_qemu_tb_exec(env, tb_ptr) \
-    ((long REGPARM (*)(void *, void *))code_gen_prologue)(env, tb_ptr)
+    ((long REGPARM (*)(void *, void *))ctx.code_gen_prologue)(env, tb_ptr)
 #endif
-

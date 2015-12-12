@@ -1,8 +1,3 @@
-extern TCGContext GLOBAL_tcg_ctx;
-extern uint8_t GLOBAL_code_gen_prologue[];
-extern TCGArg GLOBAL_gen_opparam_buf[];
-extern uint16_t GLOBAL_gen_opc_buf[];
-
 void attach_gen_opc_buf(void*buf);
 void attach_tcg_ctx(void*tcg_c);
 void attach_code_gen_prologue(void *prol);

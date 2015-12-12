@@ -150,7 +150,7 @@ static void tcg_out_label(TCGContext *s, int label_index,
 
 int gen_new_label(void)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx.tcg_ctx;
     int idx;
     TCGLabel *l;
 
@@ -251,7 +251,7 @@ void tcg_context_init(TCGContext *s)
 void tcg_prologue_init(TCGContext *s)
 {
     /* init global prologue and epilogue */
-    s->code_buf = code_gen_prologue;
+    s->code_buf = ctx.code_gen_prologue;
     s->code_ptr = s->code_buf;
     tcg_target_qemu_prologue(s);
     flush_icache_range((unsigned long)s->code_buf, 
@@ -277,8 +277,8 @@ void tcg_func_start(TCGContext *s)
     s->nb_labels = 0;
     s->current_frame_offset = s->frame_start;
 
-    gen_opc_ptr = gen_opc_buf;
-    gen_opparam_ptr = gen_opparam_buf;
+    gen_opc_ptr = ctx.gen_opc_buf;
+    gen_opparam_ptr = ctx.gen_opparam_buf;
 }
 
 static inline void tcg_temp_alloc(TCGContext *s, int n)
@@ -290,7 +290,7 @@ static inline void tcg_temp_alloc(TCGContext *s, int n)
 static inline int tcg_global_reg_new_internal(TCGType type, int reg,
                                               const char *name)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx.tcg_ctx;
     TCGTemp *ts;
     int idx;
 
@@ -333,7 +333,7 @@ static inline int tcg_global_mem_new_internal(TCGType type, int reg,
                                               tcg_target_long offset,
                                               const char *name)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx.tcg_ctx;
     TCGTemp *ts;
     int idx;
 
@@ -410,7 +410,7 @@ TCGv_i64 tcg_global_mem_new_i64(int reg, tcg_target_long offset,
 
 static inline int tcg_temp_new_internal(TCGType type, int temp_local)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx.tcg_ctx;
     TCGTemp *ts;
     int idx, k;
 
@@ -478,7 +478,7 @@ TCGv_i64 tcg_temp_new_internal_i64(int temp_local)
 
 static inline void tcg_temp_free_internal(int idx)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx.tcg_ctx;
     TCGTemp *ts;
     int k;
 
@@ -537,7 +537,7 @@ TCGv_i64 tcg_const_local_i64(int64_t val)
 
 void tcg_register_helper(void *func, const char *name)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx.tcg_ctx;
     int n;
     if ((s->nb_helpers + 1) > s->allocated_helpers) {
         n = s->allocated_helpers;
@@ -998,7 +998,7 @@ static void tcg_liveness_analysis(TCGContext *s)
     
     gen_opc_ptr++; /* skip end */
 
-    nb_ops = gen_opc_ptr - gen_opc_buf;
+    nb_ops = gen_opc_ptr - ctx.gen_opc_buf;
 
     s->op_dead_args = tcg_malloc(nb_ops * sizeof(uint16_t));
     
@@ -1008,7 +1008,7 @@ static void tcg_liveness_analysis(TCGContext *s)
     args = gen_opparam_ptr;
     op_index = nb_ops - 1;
     while (op_index >= 0) {
-        op = gen_opc_buf[op_index];
+        op = ctx.gen_opc_buf[op_index];
         def = &tcg_op_defs[op];
         switch(op) {
         case INDEX_op_call:
@@ -1030,7 +1030,7 @@ static void tcg_liveness_analysis(TCGContext *s)
                         if (!dead_temps[arg])
                             goto do_not_remove_call;
                     }
-                    tcg_set_nop(s, gen_opc_buf + op_index, 
+                    tcg_set_nop(s, ctx.gen_opc_buf + op_index,
                                 args - 1, nb_args);
                 } else {
                 do_not_remove_call:
@@ -1096,7 +1096,7 @@ static void tcg_liveness_analysis(TCGContext *s)
                     if (!dead_temps[arg])
                         goto do_not_remove;
                 }
-                tcg_set_nop(s, gen_opc_buf + op_index, args, def->nb_args);
+                tcg_set_nop(s, ctx.gen_opc_buf + op_index, args, def->nb_args);
             } else {
             do_not_remove:
 
@@ -1133,7 +1133,7 @@ static void tcg_liveness_analysis(TCGContext *s)
         op_index--;
     }
 
-    if (args != gen_opparam_buf)
+    if (args != ctx.gen_opparam_buf)
         tcg_abort();
 }
 #else
@@ -1141,7 +1141,7 @@ static void tcg_liveness_analysis(TCGContext *s)
 static void tcg_liveness_analysis(TCGContext *s)
 {
     int nb_ops;
-    nb_ops = gen_opc_ptr - gen_opc_buf;
+    nb_ops = gen_opc_ptr - ctx.gen_opc_buf;
 
     s->op_dead_args = tcg_malloc(nb_ops * sizeof(uint16_t));
     memset(s->op_dead_args, 0, nb_ops * sizeof(uint16_t));
@@ -1725,7 +1725,7 @@ static inline int tcg_gen_code_common(TCGContext *s, uint8_t *gen_code_buf,
 
 #ifdef USE_TCG_OPTIMIZATIONS
     gen_opparam_ptr =
-        tcg_optimize(s, gen_opc_ptr, gen_opparam_buf, tcg_op_defs);
+        tcg_optimize(s, gen_opc_ptr, ctx.gen_opparam_buf, tcg_op_defs);
 #endif
 
     tcg_liveness_analysis(s);
@@ -1734,11 +1734,11 @@ static inline int tcg_gen_code_common(TCGContext *s, uint8_t *gen_code_buf,
     s->code_buf = gen_code_buf;
     s->code_ptr = gen_code_buf;
 
-    args = gen_opparam_buf;
+    args = ctx.gen_opparam_buf;
     op_index = 0;
 
     for(;;) {
-        opc = gen_opc_buf[op_index];
+        opc = ctx.gen_opc_buf[op_index];
         def = &tcg_op_defs[opc];
         switch(opc) {
         case INDEX_op_mov_i32:
