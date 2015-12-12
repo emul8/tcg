@@ -1,3 +1,6 @@
+#ifndef TCG_ADDITIONAL_H
+#define TCG_ADDITIONAL_H
+
 void attach_gen_opc_buf(void*buf);
 void attach_tcg_ctx(void*tcg_c);
 void attach_code_gen_prologue(void *prol);
@@ -15,3 +18,4 @@ void set_tlb_entry_addr_rwu(unsigned int read, unsigned int write, unsigned int 
 void attach_malloc(void *malloc_callback);
 void attach_realloc(void * reall);
 
+#endif

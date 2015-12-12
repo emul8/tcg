@@ -1158,7 +1158,7 @@ static void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args,
     }
     tcg_out_movi(s, TCG_TYPE_I32, tcg_target_call_iarg_regs[arg_idx],
                  mem_index);
-    tcg_out_calli(s, (tcg_target_long)ctx.ld_helpers[s_bits]);
+    tcg_out_calli(s, (tcg_target_long)ctx->ld_helpers[s_bits]);
 
     switch(opc) {
     case 0 | 4:
@@ -1340,7 +1340,7 @@ static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args,
         }
     }
 
-    tcg_out_calli(s, (tcg_target_long)ctx.st_helpers[s_bits]);
+    tcg_out_calli(s, (tcg_target_long)ctx->st_helpers[s_bits]);
 
     if (stack_adjust == (TCG_TARGET_REG_BITS / 8)) {
         /* Pop and discard.  This is 2 bytes smaller than the add.  */

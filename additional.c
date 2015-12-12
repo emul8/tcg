@@ -25,36 +25,20 @@
 #include <string.h>
 #include "tcg.h"
 
-tcg_context_t ctx;
-
-void attach_gen_opc_buf(void *buf) {
-	ctx.gen_opc_buf = buf;
-}
-
-void attach_tcg_ctx(void *tcg_c) {
-	ctx.tcg_ctx = tcg_c;
-}
-
-void attach_code_gen_prologue(void *prol) {
-	ctx.code_gen_prologue = prol;
-}
-
-void attach_gen_opparam_buf(void *buf) {
-	ctx.gen_opparam_buf = buf;
-}
+tcg_context_t *ctx;
 
 void attach_ld_helpers(void *__ldb, void *__ldw, void *__ldl, void *__ldq) {
-	ctx.ld_helpers[0] = __ldb;
-	ctx.ld_helpers[1] = __ldw;
-	ctx.ld_helpers[2] = __ldl;
-	ctx.ld_helpers[3] = __ldq;
+	ctx->ld_helpers[0] = __ldb;
+	ctx->ld_helpers[1] = __ldw;
+	ctx->ld_helpers[2] = __ldl;
+	ctx->ld_helpers[3] = __ldq;
 }
 
 void attach_st_helpers(void *__stb, void *__stw, void *__stl, void *__stq) {
-	ctx.st_helpers[0] = __stb;
-	ctx.st_helpers[1] = __stw;
-	ctx.st_helpers[2] = __stl;
-	ctx.st_helpers[3] = __stq;
+	ctx->st_helpers[0] = __stb;
+	ctx->st_helpers[1] = __stw;
+	ctx->st_helpers[2] = __stl;
+	ctx->st_helpers[3] = __stq;
 }
 
 void *(*_TCG_malloc)(size_t);
