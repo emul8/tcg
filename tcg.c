@@ -208,8 +208,21 @@ void tcg_pool_reset(TCGContext *s)
     s->pool_current = NULL;
 }
 
+static uint8_t code_gen_prologue[1024] code_gen_section;
+static TCGContext tcg_ctx;
+static TCGArg gen_opparam_buf[OPPARAM_BUF_SIZE];
+static uint16_t gen_opc_buf[OPC_BUF_SIZE];
+static target_ulong gen_opc_pc[OPC_BUF_SIZE];
+static uint8_t gen_opc_instr_start[OPC_BUF_SIZE];
+
 void tcg_attach_context(tcg_context_t *c) {
     ctx = c;
+    ctx->tcg_ctx = &tcg_ctx;
+    ctx->code_gen_prologue = code_gen_prologue;
+    ctx->gen_opparam_buf = gen_opparam_buf;
+    ctx->gen_opc_buf = gen_opc_buf;
+    ctx->gen_opc_pc = gen_opc_pc;
+    ctx->gen_opc_instr_start = gen_opc_instr_start;
 }
 
 void tcg_context_init()
