@@ -404,11 +404,17 @@ typedef struct tcg_context_t {
    TCGContext *tcg_ctx;
    uint16_t *gen_opc_buf;
    TCGArg *gen_opparam_buf;
-   uint8_t *code_gen_prologue __attribute__((aligned (32)));
+   uint8_t *code_gen_prologue;
    target_ulong *gen_opc_pc;
    uint8_t *gen_opc_instr_start;
-   void *ld_helpers[4];
-   void *st_helpers[4];
+   void *ldb;
+   void *ldw;
+   void *ldl;
+   void *ldq;
+   void *stb;
+   void *stw;
+   void *stl;
+   void *stq;
 } tcg_context_t;
 
 extern tcg_context_t *ctx;

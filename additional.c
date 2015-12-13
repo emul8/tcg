@@ -27,20 +27,6 @@
 
 tcg_context_t *ctx;
 
-void attach_ld_helpers(void *__ldb, void *__ldw, void *__ldl, void *__ldq) {
-	ctx->ld_helpers[0] = __ldb;
-	ctx->ld_helpers[1] = __ldw;
-	ctx->ld_helpers[2] = __ldl;
-	ctx->ld_helpers[3] = __ldq;
-}
-
-void attach_st_helpers(void *__stb, void *__stw, void *__stl, void *__stq) {
-	ctx->st_helpers[0] = __stb;
-	ctx->st_helpers[1] = __stw;
-	ctx->st_helpers[2] = __stl;
-	ctx->st_helpers[3] = __stq;
-}
-
 void *(*_TCG_malloc)(size_t);
 
 void attach_malloc(void *malloc_callback) {

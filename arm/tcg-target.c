@@ -1033,7 +1033,22 @@ static inline void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args, int opc)
                     TCG_REG_R1, 0, addr_reg2, SHIFT_IMM_LSL(0));
     tcg_out_dat_imm(s, COND_AL, ARITH_MOV, TCG_REG_R2, 0, mem_index);
 # endif
-    tcg_out_call(s, (tcg_target_long) ctx->ld_helpers[s_bits]);
+    switch (s_bits) {
+    case 0:
+        tcg_out_call(s, (tcg_target_long)ctx->ldb);
+        break;
+    case 1:
+        tcg_out_call(s, (tcg_target_long)ctx->ldw);
+        break;
+    case 2:
+        tcg_out_call(s, (tcg_target_long)ctx->ldl);
+        break;
+    case 3:
+        tcg_out_call(s, (tcg_target_long)ctx->ldq);
+        break;
+    default:
+        tcg_abort();
+    }
 
     switch (opc) {
     case 0 | 4:
@@ -1235,7 +1250,23 @@ static inline void tcg_out_qemu_st(TCGContext *s, const TCGArg *args, int opc)
         break;
     }
 
-    tcg_out_call(s, (tcg_target_long) ctx->st_helpers[s_bits]);
+    switch (s_bits) {
+    case 0:
+        tcg_out_call(s, (tcg_target_long)ctx->stb);
+        break;
+    case 1:
+        tcg_out_call(s, (tcg_target_long)ctx->stw);
+        break;
+    case 2:
+        tcg_out_call(s, (tcg_target_long)ctx->stl);
+        break;
+    case 3:
+        tcg_out_call(s, (tcg_target_long)ctx->stq);
+        break;
+    default:
+        tcg_abort();
+    }
+
     if (opc == 3)
         tcg_out_dat_imm(s, COND_AL, ARITH_ADD, TCG_REG_R13, TCG_REG_R13, 0x10);
 
