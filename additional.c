@@ -25,49 +25,7 @@
 #include <string.h>
 #include "tcg.h"
 
-uint16_t *gen_opc_buf;
-TCGArg *gen_opparam_buf;
-uint8_t *code_gen_prologue __attribute__((aligned (32)));
-
-TCGContext *tcg_ctx;
-
-void *qemu_ld_helpers[4] = {
- NULL, NULL, NULL, NULL
-};
-
-void *qemu_st_helpers[4] = {
- NULL, NULL, NULL, NULL
-};
-
-void attach_gen_opc_buf(void *buf) {
-	gen_opc_buf = buf;
-}
-
-void attach_tcg_ctx(void *tcg_c) {
-	tcg_ctx = tcg_c;
-}
-
-void attach_code_gen_prologue(void *prol) {
-	code_gen_prologue = prol;
-}
-
-void attach_gen_opparam_buf(void *buf) {
-	gen_opparam_buf = buf;
-}
-
-void attach_ld_helpers(void *__ldb, void *__ldw, void *__ldl, void *__ldq) {
-	qemu_ld_helpers[0] = __ldb;
-	qemu_ld_helpers[1] = __ldw;
-	qemu_ld_helpers[2] = __ldl;
-	qemu_ld_helpers[3] = __ldq;
-}
-
-void attach_st_helpers(void *__stb, void *__stw, void *__stl, void *__stq) {
-	qemu_st_helpers[0] = __stb;
-	qemu_st_helpers[1] = __stw;
-	qemu_st_helpers[2] = __stl;
-	qemu_st_helpers[3] = __stq;
-}
+tcg_context_t *ctx;
 
 void *(*_TCG_malloc)(size_t);
 
