@@ -24,8 +24,6 @@
 #include "tcg.h"
 #include "additional.h"
 
-extern tcg_context_t *ctx;
-
 int gen_new_label(void);
 
 static inline void tcg_gen_op1_i32(TCGOpcode opc, TCGv_i32 arg1)
