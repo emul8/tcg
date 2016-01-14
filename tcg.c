@@ -225,7 +225,10 @@ static void tcg_pool_free_inner(TCGPool *pool)
 
 static void tcg_pool_free(TCGContext *s)
 {
-  tcg_pool_free_inner(s->pool_first);
+  if(s->pool_first)
+  {
+    tcg_pool_free_inner(s->pool_first);
+  }
 }
 
 void tcg_context_init(TCGContext *s)
