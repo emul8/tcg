@@ -214,7 +214,7 @@ static void tcg_pool_free_inner(TCGPool *pool)
   {
     tcg_pool_free_inner(pool->next);
   }
-  TCG_realloc(pool, 0);
+  TCG_free(pool);
 }
 
 static void tcg_pool_free(TCGContext *s)
@@ -277,12 +277,12 @@ void tcg_context_init()
     tcg_target_init(s);
 }
 
-void tcg_dispose(TCGContext *s)
+void tcg_dispose()
 {
-  TCG_realloc(tcg_op_defs[0].args_ct, 0);
-  TCG_realloc(tcg_op_defs[0].sorted_args, 0);
-  tcg_pool_free(s);
-  TCG_realloc(s->helpers, 0);
+  TCG_free(tcg_op_defs[0].args_ct);
+  TCG_free(tcg_op_defs[0].sorted_args);
+  tcg_pool_free(ctx->tcg_ctx);
+  TCG_free(ctx->tcg_ctx->helpers);
 }
 
 void tcg_prologue_init()

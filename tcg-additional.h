@@ -17,5 +17,6 @@ void set_tlb_entry_addr_rwu(unsigned int read, unsigned int write, unsigned int 
 
 void attach_malloc(void *malloc_callback);
 void attach_realloc(void * reall);
+void attach_free(void *free_callback);
 
 #endif
