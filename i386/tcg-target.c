@@ -951,12 +951,6 @@ static void tcg_out_jmp(TCGContext *s, tcg_target_long dest)
     tcg_out_branch(s, 0, dest);
 }
 
-#include "../softmmu_defs.h"
-
-extern void *qemu_ld_helpers[];
-extern void *qemu_st_helpers[];
-
-
 /* Perform the TLB load and compare.
 
    Inputs:
@@ -1164,7 +1158,23 @@ static void tcg_out_qemu_ld(TCGContext *s, const TCGArg *args,
     }
     tcg_out_movi(s, TCG_TYPE_I32, tcg_target_call_iarg_regs[arg_idx],
                  mem_index);
-    tcg_out_calli(s, (tcg_target_long)qemu_ld_helpers[s_bits]);
+
+    switch (s_bits) {
+    case 0:
+        tcg_out_calli(s, (tcg_target_long)ctx->ldb);
+	break;
+    case 1:
+        tcg_out_calli(s, (tcg_target_long)ctx->ldw);
+	break;
+    case 2:
+        tcg_out_calli(s, (tcg_target_long)ctx->ldl);
+	break;
+    case 3:
+        tcg_out_calli(s, (tcg_target_long)ctx->ldq);
+	break;
+    default:
+        tcg_abort();
+    }
 
     switch(opc) {
     case 0 | 4:
@@ -1346,7 +1356,22 @@ static void tcg_out_qemu_st(TCGContext *s, const TCGArg *args,
         }
     }
 
-    tcg_out_calli(s, (tcg_target_long)qemu_st_helpers[s_bits]);
+    switch (s_bits) {
+    case 0:
+        tcg_out_calli(s, (tcg_target_long)ctx->stb);
+        break;
+    case 1:
+        tcg_out_calli(s, (tcg_target_long)ctx->stw);
+        break;
+    case 2:
+        tcg_out_calli(s, (tcg_target_long)ctx->stl);
+        break;
+    case 3:
+        tcg_out_calli(s, (tcg_target_long)ctx->stq);
+        break;
+    default:
+        tcg_abort();
+    }
 
     if (stack_adjust == (TCG_TARGET_REG_BITS / 8)) {
         /* Pop and discard.  This is 2 bytes smaller than the add.  */

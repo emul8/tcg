@@ -374,12 +374,8 @@ struct TCGContext {
     int helpers_sorted;
 };
 
-extern TCGContext *tcg_ctx;
-
 extern uint16_t *gen_opc_ptr;
 extern TCGArg *gen_opparam_ptr;
-extern uint16_t *gen_opc_buf;
-extern TCGArg *gen_opparam_buf;
 
 /* pool based memory allocation */
 
@@ -387,24 +383,63 @@ void *tcg_malloc_internal(TCGContext *s, int size);
 void tcg_pool_reset(TCGContext *s);
 void tcg_pool_delete(TCGContext *s);
 
+
+#if defined(__arm__)
+/* The prologue must be reachable with a direct jump. ARM and Sparc64
+ have limited branch ranges (possibly also PPC) so place it in a
+ section close to code segment. */
+#define code_gen_section                                \
+    __attribute__((__section__(".gen_code")))           \
+    __attribute__((aligned (32)))
+#elif defined(_WIN32)
+/* Maximum alignment for Win32 is 16. */
+#define code_gen_section                                \
+    __attribute__((aligned (16)))
+#else
+#define code_gen_section                                \
+    __attribute__((aligned (32)))
+#endif
+
+typedef struct tcg_context_t {
+   TCGContext *tcg_ctx;
+   uint16_t *gen_opc_buf;
+   TCGArg *gen_opparam_buf;
+   uint8_t *code_gen_prologue;
+   target_ulong *gen_opc_pc;
+   uint8_t *gen_opc_instr_start;
+   void *ldb;
+   void *ldw;
+   void *ldl;
+   void *ldq;
+   void *stb;
+   void *stw;
+   void *stl;
+   void *stq;
+} tcg_context_t;
+
+extern tcg_context_t *ctx;
+
+void tcg_attach_context(tcg_context_t *con);
+
 static inline void *tcg_malloc(int size)
 {
-    TCGContext *s = tcg_ctx;
+    TCGContext *s = ctx->tcg_ctx;
     uint8_t *ptr, *ptr_end;
     size = (size + sizeof(long) - 1) & ~(sizeof(long) - 1);
     ptr = s->pool_cur;
     ptr_end = ptr + size;
     if (unlikely(ptr_end > s->pool_end)) {
-        return tcg_malloc_internal(tcg_ctx, size);
+        return tcg_malloc_internal(ctx->tcg_ctx, size);
     } else {
         s->pool_cur = ptr_end;
         return ptr;
     }
 }
 
-void tcg_context_init(TCGContext *s);
-void tcg_dispose(TCGContext *s);
-void tcg_prologue_init(TCGContext *s);
+
+void tcg_context_init();
+void tcg_dispose();
+void tcg_prologue_init();
 void tcg_func_start(TCGContext *s);
 
 int tcg_gen_code(TCGContext *s, uint8_t *gen_code_buf);
@@ -549,11 +584,8 @@ TCGv_i64 tcg_const_i64(int64_t val);
 TCGv_i32 tcg_const_local_i32(int32_t val);
 TCGv_i64 tcg_const_local_i64(int64_t val);
 
-extern uint8_t *code_gen_prologue;
-
 /* TCG targets may use a different definition of tcg_qemu_tb_exec. */
 #if !defined(tcg_qemu_tb_exec)
 # define tcg_qemu_tb_exec(env, tb_ptr) \
-    ((long REGPARM (*)(void *, void *))code_gen_prologue)(env, tb_ptr)
+    ((long REGPARM (*)(void *, void *))ctx->code_gen_prologue)(env, tb_ptr)
 #endif
-
