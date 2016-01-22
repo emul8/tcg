@@ -47,6 +47,16 @@ void *TCG_realloc(void *ptr, size_t size) {
     return _TCG_realloc(ptr, size);
 }
 
+void (*_TCG_free)(void *ptr);
+
+void attach_free(void *free_callback) {
+  _TCG_free = free_callback;
+}
+
+void TCG_free(void *ptr) {
+  _TCG_free(ptr);
+}
+
 void TCG_pstrcpy(char *buf, int buf_size, const char *str)
 {
     int c;

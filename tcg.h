@@ -436,7 +436,9 @@ static inline void *tcg_malloc(int size)
     }
 }
 
+
 void tcg_context_init();
+void tcg_dispose();
 void tcg_prologue_init();
 void tcg_func_start(TCGContext *s);
 

@@ -208,6 +208,23 @@ void tcg_pool_reset(TCGContext *s)
     s->pool_current = NULL;
 }
 
+static void tcg_pool_free_inner(TCGPool *pool)
+{
+  if(pool->next)
+  {
+    tcg_pool_free_inner(pool->next);
+  }
+  TCG_free(pool);
+}
+
+static void tcg_pool_free(TCGContext *s)
+{
+  if(s->pool_first)
+  {
+    tcg_pool_free_inner(s->pool_first);
+  }
+}
+
 static uint8_t code_gen_prologue[1024] code_gen_section;
 static TCGContext tcg_ctx;
 static TCGArg gen_opparam_buf[OPPARAM_BUF_SIZE];
@@ -258,6 +275,14 @@ void tcg_context_init()
         args_ct += n;
     }
     tcg_target_init(s);
+}
+
+void tcg_dispose()
+{
+  TCG_free(tcg_op_defs[0].args_ct);
+  TCG_free(tcg_op_defs[0].sorted_args);
+  tcg_pool_free(ctx->tcg_ctx);
+  TCG_free(ctx->tcg_ctx->helpers);
 }
 
 void tcg_prologue_init()
