@@ -6,6 +6,7 @@
 void *TCG_malloc(size_t size);
 void *TCG_realloc(void *ptr, size_t size);
 void TCG_free(void *ptr);
+void TCG_pstrcpy(char *buf, int buf_size, const char *str);
 
 extern unsigned int temp_buf_offset;
 extern unsigned int tlb_table_n_0_addr_read[7];
