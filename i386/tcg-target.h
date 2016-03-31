@@ -122,7 +122,11 @@ typedef enum {
 #if TCG_TARGET_REG_BITS == 64
 # define TCG_AREG0 TCG_REG_R14
 #else
-# define TCG_AREG0 TCG_REG_EBP
+#if defined(__linux__)
+#define TCG_AREG0 TCG_REG_EBX
+#else
+#define TCG_AREG0 TCG_REG_EBP
+#endif
 #endif
 
 static inline void flush_icache_range(unsigned long start, unsigned long stop)
